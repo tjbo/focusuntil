@@ -100,3 +100,4 @@ spec/fixtures/logo.png
 npm-debug.log
 /lib/
 /node_modules/
+.bsb.lock
