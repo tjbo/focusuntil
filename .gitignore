@@ -95,3 +95,8 @@ patches/mtime-cache.json
 spec/fixtures/logo.png
 
 .merlin
+
+.bsb.lock
+npm-debug.log
+/lib/
+/node_modules/

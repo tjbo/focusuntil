@@ -1,0 +1,53 @@
+{
+  "name": "app.focusuntil.com",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./main.js",
+  "build": {
+    "appId": "focus.until",
+    "mac": {
+      "category": "public.app-category.video"
+    },
+    "files": [
+      "lib/js/src/index.js"
+    ]
+  },
+  "dependencies": {
+    "@babel/preset-react": "^7.14.5",
+    "@chakra-ui/react": "^1.6.8",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
+    "@rescript/react": "^0.10.3",
+    "electron-reload": "^2.0.0-alpha.1",
+    "framer-motion": "^4",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "rescript": "^9.1.4",
+    "rescript-chakra": "^1.2.0-next.6"
+  },
+  "scripts": {
+    "start": "rescript build -w -with-deps",
+    "electron": "electron ."
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^14.0.1"
+  }
+}
