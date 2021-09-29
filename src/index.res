@@ -1,6 +1,19 @@
 type timerId
+open Types
+
+let calculateEndTime = (date, sessionLength): endTime => {
+  let newMinutes = ref(Js.Date.getMinutes(date) +. sessionLength)
+  let newHour = ref(Js.Date.getHours(date))
+
+  while newMinutes.contents >= 60.0 {
+    newMinutes := newMinutes.contents -. 60.0
+    newHour := newHour.contents +. 1.0
+  }
+  {hour: newHour.contents, minutes: newMinutes.contents}
+}
 
 type state = {
+  endTime: endTime,
   now: float,
   prevNow: float,
   isRunning: bool,
@@ -10,6 +23,10 @@ type state = {
 }
 
 let initialState: state = {
+  endTime: {
+    hour: 0.0,
+    minutes: 0.0,
+  },
   isRunning: false,
   now: Js.Date.now(),
   prevNow: Js.Date.now(),
@@ -19,12 +36,17 @@ let initialState: state = {
 }
 
 type action =
+  | SetSessionLength({minutes: float})
   | TickTock
   | ToggleTimer
   | None
 
 let reducer = (state: state, action: action) => {
   switch action {
+  | SetSessionLength({minutes}) => {
+      ...state,
+      sessionLength: minutes,
+    }
   | TickTock => {
       let now = Js.Date.now()
       {
@@ -36,10 +58,14 @@ let reducer = (state: state, action: action) => {
       }
     }
   | ToggleTimer => {
-      let now = Js.Date.now()
+      let now = Js.Date.make()
+
+      let endTime = calculateEndTime(now, state.sessionLength)
+
       {
         ...state,
-        startTime: state.startTime === 0.0 ? now : state.startTime,
+        endTime: endTime,
+        startTime: state.startTime === 0.0 ? Js.Date.getMilliseconds(now) : state.startTime,
         isRunning: !state.isRunning,
       }
     }
@@ -53,11 +79,7 @@ module App = {
   open ClockSelect
   @react.component
   let make = () => {
-    let (sessionLength, setSessionLength) = React.useState(_ => 45)
-    let (endTime, setEndTime) = React.useState(_ => {"hour": 0, "minutes": 0})
     let (state, dispatch) = React.useReducer(reducer, initialState)
-
-    let timeLeft = state.sessionLength *. 60.0 -. state.elaspedTime /. 1000.0
 
     React.useEffect(() => {
       let interval = ref(Js.Nullable.return(Js.Global.setInterval(() => dispatch(TickTock), 300)))
@@ -67,52 +89,29 @@ module App = {
       Some(cleanup)
     })
 
-    let setClock = session => {
-      let now = Js.Date.make()
-      let minutes = Belt.Float.toInt(Js.Date.getMinutes(now)) + session
-      let hours = Belt.Float.toInt(Js.Date.getHours(now))
-
-      let time = (hour, minutes) => {
-        let newMinutes = ref(minutes)
-        let newHours = ref(hour)
-
-        while newMinutes.contents >= 60 {
-          newMinutes := newMinutes.contents - 60
-          newHours := newHours.contents + 1
-        }
-
-        (newHours.contents, newMinutes.contents)
-      }
-      let (hours, minutes) = time(hours, minutes)
-      setEndTime(_ => {"hour": hours, "minutes": minutes})
-    }
-
     let buttonText = switch state.isRunning {
     | false => "Start"
     | true => "Pause"
     }
 
+    let timeLeft = state.sessionLength *. 60.0 -. state.elaspedTime /. 1000.0
     let secondsLeft = Js.Math.floor(Belt.Int.toFloat(mod(Belt.Float.toInt(timeLeft), 60)))
     let minutesLeft = Js.Math.floor(Belt.Int.toFloat(mod(Belt.Float.toInt(timeLeft) / 60, 60)))
+    let hoursLeft = Js.Math.floor(Belt.Int.toFloat(mod(Belt.Float.toInt(timeLeft) / 60 / 60, 60)))
 
     let onSessionChange = value => {
-      setSessionLength(_ => value)
-      setClock(value)
+      dispatch(SetSessionLength({minutes: Belt.Int.toFloat(value)}))
     }
-
-    if endTime["hour"] === 0 {
-      setClock(sessionLength)
-    }
-
-    Js.log(state)
 
     <Provider>
       <Flex border={#1} alignContent={#center} justifyContent={#center} height={#max}>
         <VStack>
-          <Clock hour={endTime["hour"]} minutes={endTime["minutes"]} />
-          <ClockSelect onChange={onSessionChange} value={sessionLength} />
+          <Clock endTime={state.endTime} />
+          <ClockSelect onChange={onSessionChange} value={state.sessionLength} />
           <Flex>
             {React.string("Time Remaining:")}
+            {React.string(Belt.Int.toString(hoursLeft))}
+            {React.string(":")}
             {React.string(Belt.Int.toString(minutesLeft))}
             {React.string(":")}
             {React.string(Belt.Int.toString(secondsLeft))}
@@ -122,9 +121,6 @@ module App = {
             bg={#green500}
             onClick={_ => {
               dispatch(ToggleTimer)
-
-              // let intervalId = callTimer(dispatch(Tick))
-              // dispatch(SetIntervalId({intervalId: intervalId}))
             }}>
             {React.string(buttonText)}
           </Button>
