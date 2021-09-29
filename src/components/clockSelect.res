@@ -3,6 +3,7 @@ module ClockSelect = {
   @react.component
   let make = (~value: float, ~onChange: int => unit) => {
     let _onChange = e => {
+      // for some reason this turns to a string, maybe React.Reason doesn't cast it directly?
       onChange(ReactEvent.Form.target(e)["value"] * 1)
     }
 

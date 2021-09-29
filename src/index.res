@@ -1,4 +1,3 @@
-type timerId
 open Types
 
 let calculateEndTime = (date, sessionLength): endTime => {
@@ -16,6 +15,7 @@ type state = {
   endTime: endTime,
   now: float,
   prevNow: float,
+  isSessionStarted: bool,
   isRunning: bool,
   sessionLength: float,
   startTime: float,
@@ -27,6 +27,7 @@ let initialState: state = {
     hour: 0.0,
     minutes: 0.0,
   },
+  isSessionStarted: false,
   isRunning: false,
   now: Js.Date.now(),
   prevNow: Js.Date.now(),
@@ -37,17 +38,22 @@ let initialState: state = {
 
 type action =
   | SetSessionLength({minutes: float})
-  | TickTock
+  | Tick
   | ToggleTimer
   | None
 
 let reducer = (state: state, action: action) => {
   switch action {
   | SetSessionLength({minutes}) => {
-      ...state,
-      sessionLength: minutes,
+      let now = Js.Date.make()
+      let endTime = calculateEndTime(now, state.sessionLength)
+      {
+        ...state,
+        endTime: endTime,
+        sessionLength: minutes,
+      }
     }
-  | TickTock => {
+  | Tick => {
       let now = Js.Date.now()
       {
         ...state,
@@ -59,7 +65,6 @@ let reducer = (state: state, action: action) => {
     }
   | ToggleTimer => {
       let now = Js.Date.make()
-
       let endTime = calculateEndTime(now, state.sessionLength)
 
       {
@@ -75,57 +80,50 @@ let reducer = (state: state, action: action) => {
 
 module App = {
   open Chakra
-  open Clock
   open ClockSelect
+  open Session
   @react.component
   let make = () => {
     let (state, dispatch) = React.useReducer(reducer, initialState)
 
     React.useEffect(() => {
-      let interval = ref(Js.Nullable.return(Js.Global.setInterval(() => dispatch(TickTock), 300)))
+      let interval = ref(Js.Nullable.return(Js.Global.setInterval(() => dispatch(Tick), 300)))
       let cleanup = () => {
         Js.Nullable.iter(interval.contents, (. intervalId) => Js.Global.clearInterval(intervalId))
       }
       Some(cleanup)
     })
 
+    let onSessionChange = value => {
+      dispatch(SetSessionLength({minutes: Belt.Int.toFloat(value)}))
+    }
+
+    Js.log(state)
+
     let buttonText = switch state.isRunning {
     | false => "Start"
     | true => "Pause"
     }
 
-    let timeLeft = state.sessionLength *. 60.0 -. state.elaspedTime /. 1000.0
-    let secondsLeft = Js.Math.floor(Belt.Int.toFloat(mod(Belt.Float.toInt(timeLeft), 60)))
-    let minutesLeft = Js.Math.floor(Belt.Int.toFloat(mod(Belt.Float.toInt(timeLeft) / 60, 60)))
-    let hoursLeft = Js.Math.floor(Belt.Int.toFloat(mod(Belt.Float.toInt(timeLeft) / 60 / 60, 60)))
-
-    let onSessionChange = value => {
-      dispatch(SetSessionLength({minutes: Belt.Int.toFloat(value)}))
-    }
-
     <Provider>
-      <Flex border={#1} alignContent={#center} justifyContent={#center} height={#max}>
-        <VStack>
-          <Clock endTime={state.endTime} />
-          <ClockSelect onChange={onSessionChange} value={state.sessionLength} />
-          <Flex>
-            {React.string("Time Remaining:")}
-            {React.string(Belt.Int.toString(hoursLeft))}
-            {React.string(":")}
-            {React.string(Belt.Int.toString(minutesLeft))}
-            {React.string(":")}
-            {React.string(Belt.Int.toString(secondsLeft))}
-          </Flex>
-          // TODO: <Box> <Link color={#blue800}> {React.string("Record Interuption")} </Link> </Box>
-          <Button
-            bg={#green500}
-            onClick={_ => {
-              dispatch(ToggleTimer)
-            }}>
-            {React.string(buttonText)}
-          </Button>
-        </VStack>
-      </Flex>
+      <VStack>
+        <Box minHeight=#px(200)>
+          {state.isSessionStarted
+            ? <Session
+                elaspedTime=state.elaspedTime
+                endTime=state.endTime
+                sessionLength={state.sessionLength}
+              />
+            : <ClockSelect onChange={onSessionChange} value={state.sessionLength} />}
+        </Box>
+        <Button
+          bg={#green500}
+          onClick={_ => {
+            dispatch(ToggleTimer)
+          }}>
+          {React.string(buttonText)}
+        </Button>
+      </VStack>
     </Provider>
   }
 }
