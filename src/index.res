@@ -15,7 +15,8 @@ type state = {
   endTime: endTime,
   now: float,
   prevNow: float,
-  isSessionStarted: bool,
+  interruptions: int,
+  isSessionInit: bool,
   isRunning: bool,
   sessionLength: float,
   startTime: float,
@@ -27,7 +28,8 @@ let initialState: state = {
     hour: 0.0,
     minutes: 0.0,
   },
-  isSessionStarted: false,
+  interruptions: 0,
+  isSessionInit: false,
   isRunning: false,
   now: Js.Date.now(),
   prevNow: Js.Date.now(),
@@ -37,6 +39,7 @@ let initialState: state = {
 }
 
 type action =
+  | RecordInterruption
   | SetSessionLength({minutes: float})
   | Tick
   | ToggleTimer
@@ -44,6 +47,10 @@ type action =
 
 let reducer = (state: state, action: action) => {
   switch action {
+  | RecordInterruption => {
+      ...state,
+      interruptions: state.interruptions + 1,
+    }
   | SetSessionLength({minutes}) => {
       let now = Js.Date.make()
       let endTime = calculateEndTime(now, state.sessionLength)
@@ -70,6 +77,7 @@ let reducer = (state: state, action: action) => {
       {
         ...state,
         endTime: endTime,
+        isSessionInit: true,
         startTime: state.startTime === 0.0 ? Js.Date.getMilliseconds(now) : state.startTime,
         isRunning: !state.isRunning,
       }
@@ -98,8 +106,6 @@ module App = {
       dispatch(SetSessionLength({minutes: Belt.Int.toFloat(value)}))
     }
 
-    Js.log(state)
-
     let buttonText = switch state.isRunning {
     | false => "Start"
     | true => "Pause"
@@ -108,10 +114,12 @@ module App = {
     <Provider>
       <VStack>
         <Box minHeight=#px(200)>
-          {state.isSessionStarted
+          {state.isSessionInit === true
             ? <Session
                 elaspedTime=state.elaspedTime
                 endTime=state.endTime
+                interruptions={state.interruptions}
+                onRecordInterruption={_ => dispatch(RecordInterruption)}
                 sessionLength={state.sessionLength}
               />
             : <ClockSelect onChange={onSessionChange} value={state.sessionLength} />}

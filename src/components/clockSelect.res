@@ -7,6 +7,9 @@ module ClockSelect = {
       onChange(ReactEvent.Form.target(e)["value"] * 1)
     }
 
-    <Flex m={#two}> <input value={Belt.Float.toString(value)} onChange={_onChange} /> </Flex>
+    <VStack>
+      <Text fontSize={#xl3}> {React.string("How many minutes will you focus for?")} </Text>
+      <Box> <Input onChange={_onChange} value={Belt.Float.toString(value)} /> </Box>
+    </VStack>
   }
 }
