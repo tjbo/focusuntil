@@ -23,7 +23,9 @@ module ClockSelect = {
         />
       </Box>
       <Box>
-        <Button bg={#green500} onClick={_ => toggleTimer()}> {React.string("Start")} </Button>
+        <Button colorScheme={#green} color={#white} onClick={_ => toggleTimer()} size={#lg}>
+          {React.string("Start")}
+        </Button>
       </Box>
     </VStack>
   }
