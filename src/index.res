@@ -15,7 +15,7 @@ type state = {
   endTime: endTime,
   now: float,
   prevNow: float,
-  interruptions: int,
+  interruptions: array<string>,
   isSessionInit: bool,
   isRunning: bool,
   sessionLength: float,
@@ -28,7 +28,7 @@ let initialState: state = {
     hour: 0.0,
     minutes: 0.0,
   },
-  interruptions: 0,
+  interruptions: [],
   isSessionInit: false,
   isRunning: false,
   now: Js.Date.now(),
@@ -49,7 +49,7 @@ let reducer = (state: state, action: action) => {
   switch action {
   | RecordInterruption => {
       ...state,
-      interruptions: state.interruptions + 1,
+      interruptions: Js.Array2.concat(["x"], state.interruptions),
     }
   | SetSessionLength({minutes}) => {
       let now = Js.Date.make()

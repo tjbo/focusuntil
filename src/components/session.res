@@ -7,7 +7,7 @@ module Session = {
   let make = (
     ~endTime: endTime,
     ~elaspedTime: float,
-    ~interruptions: int,
+    ~interruptions: array<string>,
     ~sessionLength: float,
     ~onRecordInterruption: unit => unit,
   ) => {
@@ -15,7 +15,9 @@ module Session = {
       <VStack>
         <Clock endTime={endTime} />
         <ClockCountDown elaspedTime={elaspedTime} sessionLength={sessionLength} />
-        <Box> {React.string(Belt.Int.toString(interruptions))} </Box>
+        <Box>
+          {interruptions->Belt.Array.map(product => <Box> {React.string("X")} </Box>)->React.array}
+        </Box>
         <Box>
           <Link color={#blue800} onClick={_ => onRecordInterruption()}>
             <Button> {React.string("Record Distraction")} </Button>
