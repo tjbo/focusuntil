@@ -7,9 +7,13 @@ module ClockSelect = {
       onChange(ReactEvent.Form.target(e)["value"] * 1)
     }
 
-    <VStack>
+    <VStack justify={#spaceEvenly} minHeight={#px(200)}>
       <Text fontSize={#xl3}> {React.string("How many minutes will you focus for?")} </Text>
-      <Box> <Input onChange={_onChange} value={Belt.Float.toString(value)} /> </Box>
+      <Box>
+        <Input
+          onChange={_onChange} textAlign={#center} size={#lg} value={Belt.Float.toString(value)}
+        />
+      </Box>
     </VStack>
   }
 }

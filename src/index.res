@@ -112,8 +112,8 @@ module App = {
     }
 
     <Provider>
-      <VStack>
-        <Box minHeight=#px(200)>
+      <VStack justify={#center} marginTop={#40}>
+        <Box>
           {state.isSessionInit === true
             ? <Session
                 elaspedTime=state.elaspedTime
