@@ -7,12 +7,22 @@ module ClockSelect = {
       onChange(ReactEvent.Form.target(e)["value"] * 1)
     }
 
-    <VStack justify={#spaceEvenly} minHeight={#px(200)}>
-      <Text fontSize={#xl3}> {React.string("How many minutes will you focus for?")} </Text>
+    <VStack justify={#spaceEvenly} minHeight={#px(200)} spacing={#6}>
+      <Box maxWidth={#px(400)} textAlign={#center}>
+        <Text fontSize={#xl4} color={#white}>
+          {React.string("How many minutes will you focus for?")}
+        </Text>
+      </Box>
       <Box>
         <Input
-          onChange={_onChange} textAlign={#center} size={#lg} value={Belt.Float.toString(value)}
+          bgColor={#white}
+          onChange={_onChange}
+          textAlign={#center}
+          size={#lg}
+          value={Belt.Float.toString(value)}
         />
+      </Box>
+      <Box>
         <Button bg={#green500} onClick={_ => toggleTimer()}> {React.string("Start")} </Button>
       </Box>
     </VStack>

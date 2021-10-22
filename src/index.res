@@ -107,25 +107,27 @@ module App = {
     }
 
     <Provider>
-      <VStack justify={#center} marginTop={#40}>
-        <Box>
-          {state.isSessionInit === true
-            ? <Session
-                elaspedTime=state.elaspedTime
-                endTime=state.endTime
-                interruptions={state.interruptions}
-                isRunning={state.isRunning}
-                onRecordInterruption={_ => dispatch(RecordInterruption)}
-                sessionLength={state.sessionLength}
-                toggleTimer={() => dispatch(ToggleTimer)}
-              />
-            : <ClockSelect
-                onChange={onSessionChange}
-                value={state.sessionLength}
-                toggleTimer={() => dispatch(ToggleTimer)}
-              />}
-        </Box>
-      </VStack>
+      <Box bgColor={#green400} minHeight={#px(600)} paddingTop={#40}>
+        <VStack justify={#center}>
+          <Box>
+            {state.isSessionInit === true
+              ? <Session
+                  elaspedTime=state.elaspedTime
+                  endTime=state.endTime
+                  interruptions={state.interruptions}
+                  isRunning={state.isRunning}
+                  onRecordInterruption={_ => dispatch(RecordInterruption)}
+                  sessionLength={state.sessionLength}
+                  toggleTimer={() => dispatch(ToggleTimer)}
+                />
+              : <ClockSelect
+                  onChange={onSessionChange}
+                  value={state.sessionLength}
+                  toggleTimer={() => dispatch(ToggleTimer)}
+                />}
+          </Box>
+        </VStack>
+      </Box>
     </Provider>
   }
 }

@@ -20,10 +20,8 @@ module Session = {
 
     <Flex alignContent={#center} justifyContent={#center} height={#max}>
       <VStack>
-        <Box border={#1}>
-          <Clock endTime={endTime} />
-          <ClockCountDown elaspedTime={elaspedTime} sessionLength={sessionLength} />
-        </Box>
+        <Clock endTime={endTime} />
+        <ClockCountDown elaspedTime={elaspedTime} sessionLength={sessionLength} />
         <HStack>
           {interruptions
           ->Belt.Array.map(check =>
@@ -40,12 +38,14 @@ module Session = {
           )
           ->React.array}
         </HStack>
-        <Box>
-          <Link color={#blue800} onClick={_ => onRecordInterruption()}>
-            <Button> {React.string("Record Distraction")} </Button>
-          </Link>
-          <Button onClick={_ => toggleTimer()}> {React.string(buttonText)} </Button>
-        </Box>
+        <HStack>
+          <Box>
+            <Link color={#blue800} onClick={_ => onRecordInterruption()}>
+              <Button> {React.string("Record Distraction")} </Button>
+            </Link>
+          </Box>
+          <Box> <Button onClick={_ => toggleTimer()}> {React.string(buttonText)} </Button> </Box>
+        </HStack>
       </VStack>
       // <Box> {React.string("I can't focus ->")} </Box>
     </Flex>
