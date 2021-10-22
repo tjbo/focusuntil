@@ -95,7 +95,7 @@ module App = {
     let (state, dispatch) = React.useReducer(reducer, initialState)
 
     React.useEffect(() => {
-      let interval = ref(Js.Nullable.return(Js.Global.setInterval(() => dispatch(Tick), 300)))
+      let interval = ref(Js.Nullable.return(Js.Global.setInterval(() => dispatch(Tick), 26)))
       let cleanup = () => {
         Js.Nullable.iter(interval.contents, (. intervalId) => Js.Global.clearInterval(intervalId))
       }
@@ -104,11 +104,6 @@ module App = {
 
     let onSessionChange = value => {
       dispatch(SetSessionLength({minutes: Belt.Int.toFloat(value)}))
-    }
-
-    let buttonText = switch state.isRunning {
-    | false => "Start"
-    | true => "Pause"
     }
 
     <Provider>
@@ -122,15 +117,12 @@ module App = {
                 onRecordInterruption={_ => dispatch(RecordInterruption)}
                 sessionLength={state.sessionLength}
               />
-            : <ClockSelect onChange={onSessionChange} value={state.sessionLength} />}
+            : <ClockSelect
+                onChange={onSessionChange}
+                value={state.sessionLength}
+                toggleTimer={() => dispatch(ToggleTimer)}
+              />}
         </Box>
-        <Button
-          bg={#green500}
-          onClick={_ => {
-            dispatch(ToggleTimer)
-          }}>
-          {React.string(buttonText)}
-        </Button>
       </VStack>
     </Provider>
   }

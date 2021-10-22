@@ -11,14 +11,14 @@ module Session = {
     ~sessionLength: float,
     ~onRecordInterruption: unit => unit,
   ) => {
-    <Flex border={#1} alignContent={#center} justifyContent={#center} height={#max}>
+    <Flex alignContent={#center} justifyContent={#center} height={#max}>
       <VStack>
         <Clock endTime={endTime} />
         <ClockCountDown elaspedTime={elaspedTime} sessionLength={sessionLength} />
         <Box> {React.string(Belt.Int.toString(interruptions))} </Box>
         <Box>
           <Link color={#blue800} onClick={_ => onRecordInterruption()}>
-            {React.string("Record Distraction")}
+            <Button> {React.string("Record Distraction")} </Button>
           </Link>
         </Box>
       </VStack>

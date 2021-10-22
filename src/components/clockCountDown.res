@@ -7,14 +7,16 @@ module ClockCountDown = {
     let minutesLeft = Js.Math.floor(Belt.Int.toFloat(mod(Belt.Float.toInt(timeLeft) / 60, 60)))
     let hoursLeft = Js.Math.floor(Belt.Int.toFloat(mod(Belt.Float.toInt(timeLeft) / 60 / 60, 60)))
 
-    <Box>
-      {React.string("Time Remaining:")}
-      {hoursLeft > 0
-        ? <Box _as="span"> {React.string(Belt.Int.toString(hoursLeft))} {React.string(":")} </Box>
-        : React.null}
-      {React.string(Belt.Int.toString(minutesLeft))}
-      {React.string(":")}
-      {React.string(Belt.Int.toString(secondsLeft))}
-    </Box>
+    <VStack justify={#center}>
+      <Box> {React.string("Time Remaining:")} </Box>
+      <Box fontSize={#xl3}>
+        {hoursLeft > 0
+          ? <Box _as="span"> {React.string(Belt.Int.toString(hoursLeft))} {React.string(":")} </Box>
+          : React.null}
+        {React.string(Belt.Int.toString(minutesLeft))}
+        {React.string(":")}
+        {React.string(Belt.Int.toString(secondsLeft))}
+      </Box>
+    </VStack>
   }
 }
