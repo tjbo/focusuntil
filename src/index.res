@@ -114,8 +114,10 @@ module App = {
                 elaspedTime=state.elaspedTime
                 endTime=state.endTime
                 interruptions={state.interruptions}
+                isRunning={state.isRunning}
                 onRecordInterruption={_ => dispatch(RecordInterruption)}
                 sessionLength={state.sessionLength}
+                toggleTimer={() => dispatch(ToggleTimer)}
               />
             : <ClockSelect
                 onChange={onSessionChange}
