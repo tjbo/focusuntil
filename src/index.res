@@ -16,6 +16,7 @@ type state = {
   now: float,
   prevNow: float,
   interruptions: array<string>,
+  isFinished: bool,
   isSessionInit: bool,
   isRunning: bool,
   sessionLength: float,
@@ -30,11 +31,12 @@ let initialState: state = {
   },
   interruptions: [],
   isSessionInit: false,
+  isFinished: false,
   isRunning: false,
   now: Js.Date.now(),
   prevNow: Js.Date.now(),
   elaspedTime: 0.0,
-  sessionLength: 45.0,
+  sessionLength: 0.5,
   startTime: 0.0,
 }
 
@@ -62,12 +64,15 @@ let reducer = (state: state, action: action) => {
     }
   | Tick => {
       let now = Js.Date.now()
+
+      let isFinished = state.elaspedTime /. 1000.0 >= state.sessionLength *. 60.0
+      let isRunning = !isFinished ? state.isRunning : false
       {
         ...state,
+        isRunning: isRunning,
+        isFinished: isFinished,
         prevNow: now,
-        elaspedTime: state.isRunning
-          ? now -. state.prevNow +. state.elaspedTime
-          : state.elaspedTime,
+        elaspedTime: isRunning ? now -. state.prevNow +. state.elaspedTime : state.elaspedTime,
       }
     }
   | ToggleTimer => {
