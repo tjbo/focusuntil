@@ -107,7 +107,7 @@ module App = {
     }
 
     <Provider>
-      <Box bgColor={#blue600} minHeight={#px(600)} paddingTop={#40}>
+      <Box bgColor={#blue600} paddingTop={#40} border={#1} height={#pc(100.00)}>
         <VStack justify={#center}>
           <Box>
             {state.isSessionInit === true

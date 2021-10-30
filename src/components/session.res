@@ -1,5 +1,6 @@
 module Session = {
   open Chakra
+  open CircleTimer
   open Clock
   open ClockCountDown
   open Types
@@ -17,11 +18,15 @@ module Session = {
     | false => "Resume"
     | true => "Pause"
     }
-
-    <Flex alignContent={#center} justifyContent={#center} height={#max}>
-      <VStack>
-        <Clock endTime={endTime} />
-        <ClockCountDown elaspedTime={elaspedTime} sessionLength={sessionLength} />
+    <Flex height={#max} direction={#column} alignItems={#center}>
+      <Box> <Clock endTime={endTime} /> </Box>
+      <Flex position={#relative} alignItems={#center} justifyContent={#center}>
+        <Box> <CircleTimer sessionLength={sessionLength} elaspedTime={elaspedTime} /> </Box>
+        <Box position={#absolute}>
+          <ClockCountDown elaspedTime={elaspedTime} sessionLength={sessionLength} />
+        </Box>
+      </Flex>
+      <Box mt={#6}>
         <HStack>
           {interruptions
           ->Belt.Array.map(check =>
@@ -46,8 +51,7 @@ module Session = {
           </Box>
           <Box> <Button onClick={_ => toggleTimer()}> {React.string(buttonText)} </Button> </Box>
         </HStack>
-      </VStack>
-      // <Box> {React.string("I can't focus ->")} </Box>
+      </Box>
     </Flex>
   }
 }
