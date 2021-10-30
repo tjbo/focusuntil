@@ -107,6 +107,13 @@ module App = {
       Some(cleanup)
     })
 
+    React.useEffect1(() => {
+      if state.isFinished {
+        Js.log("is finsihed")
+      }
+      None
+    }, [state.isFinished])
+
     let onSessionChange = value => {
       dispatch(SetSessionLength({minutes: Belt.Int.toFloat(value)}))
     }
